@@ -1,0 +1,41 @@
+{
+    "name": "moe/laravel-auth",
+    "description": "Skinnable Livewire auth components for Laravel — login, register, password reset",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "MindOfEmanizer"
+        }
+    ],
+    "keywords": ["laravel", "auth", "login", "register", "livewire", "moe"],
+    "autoload": {
+        "psr-4": {
+            "Moe\\Auth\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moe\\Auth\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^8.2",
+        "illuminate/support": "^11.0|^12.0|^13.0",
+        "illuminate/auth": "^11.0|^12.0|^13.0",
+        "livewire/livewire": "^3.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0",
+        "phpunit/phpunit": "^10.5"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moe\\Auth\\MoeAuthServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
