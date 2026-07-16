@@ -60,6 +60,6 @@ class ResetPassword extends Component
     #[Layout('layouts.guest')]
     public function render()
     {
-        return view('moe-auth::reset-password');
+        return view('moe-auth::livewire.auth.reset-password');
     }
 }

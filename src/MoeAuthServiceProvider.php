@@ -2,37 +2,93 @@
 
 namespace Moe\Auth;
 
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
-use Livewire\Livewire;
-use Moe\Auth\Http\Livewire\ForgotPassword;
-use Moe\Auth\Http\Livewire\Login;
-use Moe\Auth\Http\Livewire\Register;
-use Moe\Auth\Http\Livewire\ResetPassword;
+use Moe\Auth\Middleware\RequireRole;
+use Moe\Auth\Services\GoogleService;
+use Moe\Auth\Services\OtpService;
 
 class MoeAuthServiceProvider extends ServiceProvider
 {
-    public function register(): void
-    {
-        $this->mergeConfigFrom(__DIR__ . '/../config/moe-auth.php', 'moe-auth');
-    }
-
     public function boot(): void
     {
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'moe-auth');
+        $this->registerRoutes();
+        $this->registerConfigs();
+        $this->registerViews();
+        $this->registerTranslations();
+        $this->registerMiddleware();
+        $this->registerPublishables();
+    }
 
-        Livewire::component('moe-auth-login', Login::class);
-        Livewire::component('moe-auth-register', Register::class);
-        Livewire::component('moe-auth-forgot-password', ForgotPassword::class);
-        Livewire::component('moe-auth-reset-password', ResetPassword::class);
+    protected function registerRoutes(): void
+    {
+        $this->loadRoutesFrom(__DIR__ . '/../routes/auth.php');
+    }
+
+    public function register(): void
+    {
+        $this->app->singleton(OtpService::class, fn () => new OtpService);
+        $this->app->singleton(GoogleService::class, fn () => new GoogleService);
+    }
+
+    protected function registerConfigs(): void
+    {
+        $this->mergeConfigFrom(__DIR__ . '/../config/moe-auth.php', 'moe-auth');
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__ . '/../config/moe-auth.php' => config_path('moe-auth.php'),
             ], 'moe-auth-config');
+        }
+    }
 
+    protected function registerViews(): void
+    {
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'moe-auth');
+
+        if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__ . '/../resources/views' => resource_path('views/vendor/moe-auth'),
             ], 'moe-auth-views');
         }
+    }
+
+    protected function registerTranslations(): void
+    {
+        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'moe-auth');
+
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__ . '/../resources/lang' => resource_path('lang/vendor/moe-auth'),
+            ], 'moe-auth-translations');
+        }
+    }
+
+    protected function registerMiddleware(): void
+    {
+        $this->app['router']->aliasMiddleware('role', RequireRole::class);
+    }
+
+    protected function registerPublishables(): void
+    {
+        if (! $this->app->runningInConsole()) {
+            return;
+        }
+
+        $this->publishes([
+            __DIR__ . '/../config/moe-auth.php' => config_path('moe-auth.php'),
+        ], 'moe-auth-config');
+
+        $this->publishes([
+            __DIR__ . '/../database/migrations/' => database_path('migrations'),
+        ], 'moe-auth-migrations');
+
+        $this->publishes([
+            __DIR__ . '/../resources/views' => resource_path('views/vendor/moe-auth'),
+        ], 'moe-auth-views');
+
+        $this->publishes([
+            __DIR__ . '/../resources/lang' => resource_path('lang/vendor/moe-auth'),
+        ], 'moe-auth-translations');
     }
 }

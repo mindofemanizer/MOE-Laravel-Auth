@@ -31,6 +31,6 @@ class ForgotPassword extends Component
     #[Layout('layouts.guest')]
     public function render()
     {
-        return view('moe-auth::forgot-password');
+        return view('moe-auth::livewire.auth.forgot-password');
     }
 }

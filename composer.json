@@ -1,6 +1,6 @@
 {
     "name": "moe/laravel-auth",
-    "description": "Skinnable Livewire auth components for Laravel — login, register, password reset",
+    "description": "Complete auth package for Laravel — login, register, OTP (email/WhatsApp/SMS), Google OAuth, role middleware, password reset",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -8,7 +8,7 @@
             "name": "MindOfEmanizer"
         }
     ],
-    "keywords": ["laravel", "auth", "login", "register", "livewire", "moe"],
+    "keywords": ["laravel", "auth", "login", "register", "otp", "google", "livewire", "moe"],
     "autoload": {
         "psr-4": {
             "Moe\\Auth\\": "src/"
@@ -23,11 +23,17 @@
         "php": "^8.2",
         "illuminate/support": "^11.0|^12.0|^13.0",
         "illuminate/auth": "^11.0|^12.0|^13.0",
+        "illuminate/database": "^11.0|^12.0|^13.0",
+        "illuminate/mail": "^11.0|^12.0|^13.0",
         "livewire/livewire": "^3.0|^4.0"
     },
     "require-dev": {
         "orchestra/testbench": "^9.0",
         "phpunit/phpunit": "^10.5"
+    },
+    "suggest": {
+        "laravel/socialite": "Required for Google OAuth login",
+        "moe/laravel-settings": "Required for dynamic config from admin panel"
     },
     "extra": {
         "laravel": {
