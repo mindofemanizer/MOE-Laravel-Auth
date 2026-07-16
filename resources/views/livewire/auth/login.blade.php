@@ -26,11 +26,13 @@
 
         {{-- Login Method Tabs --}}
         <div class="flex border-b border-gray-200">
-            <button wire:click="$set('loginMethod', 'password')"
-                class="flex-1 py-2 text-center text-sm font-medium {{ $loginMethod === 'password' ? 'border-b-2 border-indigo-500 text-indigo-600' : 'text-gray-500 hover:text-gray-700' }}">
-                Password
-            </button>
-            @if (config('moe-auth.features.otp', false))
+            @if (in_array('password', $this->enabledMethods()))
+                <button wire:click="$set('loginMethod', 'password')"
+                    class="flex-1 py-2 text-center text-sm font-medium {{ $loginMethod === 'password' ? 'border-b-2 border-indigo-500 text-indigo-600' : 'text-gray-500 hover:text-gray-700' }}">
+                    Password
+                </button>
+            @endif
+            @if (in_array('otp', $this->enabledMethods()))
                 <button wire:click="$set('loginMethod', 'otp')"
                     class="flex-1 py-2 text-center text-sm font-medium {{ $loginMethod === 'otp' ? 'border-b-2 border-indigo-500 text-indigo-600' : 'text-gray-500 hover:text-gray-700' }}">
                     OTP Code
@@ -143,7 +145,7 @@
         </form>
 
         {{-- Google OAuth --}}
-        @if (config('moe-auth.features.google_oauth', false))
+        @if (in_array('google', $this->enabledMethods()))
             <div class="mt-6">
                 <div class="relative">
                     <div class="absolute inset-0 flex items-center">

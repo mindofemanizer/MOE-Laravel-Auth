@@ -179,6 +179,21 @@ class Login extends Component
 
     // ─── Configurable Methods (override in child) ───
 
+    public function enabledMethods(): array
+    {
+        $methods = ['password'];
+
+        if (config('moe-auth.features.otp', false)) {
+            $methods[] = 'otp';
+        }
+
+        if (config('moe-auth.features.google_oauth', false)) {
+            $methods[] = 'google';
+        }
+
+        return $methods;
+    }
+
     protected function getUserModel(): string
     {
         return config('moe-auth.user_model', config('auth.providers.users.model'));
