@@ -3,6 +3,7 @@
 namespace Moe\Auth\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 use Moe\Auth\Services\GoogleService;
 
 class GoogleAuthController
@@ -17,7 +18,9 @@ class GoogleAuthController
         $user = $google->handleCallback();
 
         if ($user) {
-            session()->flash('success', 'Welcome back, ' . $user->name . '!');
+            Auth::login($user, remember: true);
+            session()->regenerate();
+
             return redirect(config('moe-auth.redirects.login', '/dashboard'));
         }
 
