@@ -6,21 +6,13 @@ use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
-use Livewire\Attributes\Layout;
-use Livewire\Attributes\Rule;
 use Livewire\Component;
 
 class ResetPassword extends Component
 {
     public string $token = '';
-
-    #[Rule('required|string|email')]
     public string $email = '';
-
-    #[Rule('required|string|min:8|confirmed')]
     public string $password = '';
-
-    #[Rule('required|string')]
     public string $password_confirmation = '';
 
     public function mount(string $token): void
@@ -30,7 +22,7 @@ class ResetPassword extends Component
 
     public function resetPassword(): void
     {
-        $this->validate();
+        $this->validate($this->rules());
 
         $status = Password::reset(
             [
@@ -51,13 +43,27 @@ class ResetPassword extends Component
         );
 
         if ($status === Password::PASSWORD_RESET) {
-            $this->redirect(config('moe-auth.redirects.login'), navigate: true);
+            $this->redirect($this->redirectPath());
         } else {
             $this->addError('email', __($status));
         }
     }
 
-    #[Layout('layouts.guest')]
+    protected function rules(): array
+    {
+        return [
+            'token' => 'required',
+            'email' => 'required|string|email',
+            'password' => 'required|string|min:8|confirmed',
+            'password_confirmation' => 'required|string',
+        ];
+    }
+
+    protected function redirectPath(): string
+    {
+        return config('moe-auth.redirects.login', '/login');
+    }
+
     public function render()
     {
         return view('moe-auth::livewire.auth.reset-password');

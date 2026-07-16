@@ -2,6 +2,9 @@
 
 namespace Moe\Auth\Http\Livewire;
 
+use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Component;
 use Moe\Auth\Services\OtpService;
@@ -14,21 +17,15 @@ class Register extends Component
     public $password = '';
     public $password_confirmation = '';
 
-    // OTP
     public $otpCode = '';
     public $otpSent = false;
     public $otpVerified = false;
     public $otpChannel = 'email';
     public $otpCooldown = 0;
-    public $step = 1; // 1: form, 2: otp verification
+    public $step = 1;
 
-    // General
     public $status;
     public $error;
-
-    protected $listeners = [
-        'startOtpCooldown' => 'startOtpCooldown',
-    ];
 
     public function mount()
     {
@@ -40,7 +37,8 @@ class Register extends Component
     public function sendOtp()
     {
         if (config('moe-auth.features.otp', false) === false) {
-            $this->otpVerified = true; // Skip OTP if disabled
+            $this->otpVerified = true;
+            $this->step = 2;
             return;
         }
 
@@ -51,18 +49,15 @@ class Register extends Component
             return;
         }
 
-        // Rate limit
-        $throttleKey = 'otp-register:' . $identifier;
-        $maxAttempts = config('moe-auth.rate_limit.otp_send.max_attempts', 3);
-        $decayMinutes = config('moe-auth.rate_limit.otp_send.decay_minutes', 5);
+        $throttleKey = $this->throttleKey($identifier);
 
-        if (RateLimiter::tooManyAttempts($throttleKey, $maxAttempts)) {
+        if (RateLimiter::tooManyAttempts($throttleKey, $this->otpMaxAttempts())) {
             $seconds = RateLimiter::availableIn($throttleKey);
-            $this->error = "Too many attempts. Please try again in {$seconds} seconds.";
+            $this->error = $this->throttledMessage($seconds);
             return;
         }
 
-        RateLimiter::hit($throttleKey, $decayMinutes * 60);
+        RateLimiter::hit($throttleKey, $this->otpDecaySeconds());
 
         $otpService = app(OtpService::class);
         $code = $otpService->generate($identifier, 'register');
@@ -77,12 +72,6 @@ class Register extends Component
         } else {
             $this->error = 'Failed to send verification code.';
         }
-    }
-
-    public function startOtpCooldown()
-    {
-        $this->otpCooldown = config('moe-auth.otp.throttle', 60);
-        $this->dispatch('otp-cooldown-started', $this->otpCooldown);
     }
 
     public function verifyOtp()
@@ -102,30 +91,107 @@ class Register extends Component
         $this->step = 2;
         $this->status = 'Email verified! Please complete your registration.';
         $this->error = null;
+
+        $this->afterOtpVerified();
+    }
+
+    protected function afterOtpVerified(): void
+    {
     }
 
     public function register()
     {
-        $this->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+        $this->validate($this->registerRules());
 
-        $userModel = config('moe-auth.user_model', config('auth.providers.users.model'));
+        $this->beforeRegister();
 
-        $user = $userModel::create([
-            'name' => $this->name,
-            'email' => $this->email,
-            'phone' => $this->phone ?: null,
-            'password' => bcrypt($this->password),
-            'email_verified_at' => $this->otpVerified ? now() : null,
-        ]);
+        $user = $this->getUserModel()::create($this->registerData());
 
-        auth()->login($user);
+        Auth::login($user);
         session()->regenerate();
 
-        return redirect(config('moe-auth.redirects.register', '/dashboard'));
+        $this->afterRegister($user);
+
+        return redirect($this->redirectPath());
+    }
+
+    protected function beforeRegister(): void
+    {
+    }
+
+    protected function afterRegister(User $user): void
+    {
+    }
+
+    protected function registerData(): array
+    {
+        return array_merge([
+            'name' => $this->name,
+            'email' => $this->email,
+            'password' => Hash::make($this->password),
+        ], $this->extraRegisterData());
+    }
+
+    protected function extraRegisterData(): array
+    {
+        $data = [];
+
+        if ($this->phone) {
+            $data['phone'] = $this->phone;
+        }
+
+        if ($this->otpVerified) {
+            $data['email_verified_at'] = now();
+        }
+
+        return $data;
+    }
+
+    // ─── Configurable Methods (override in child) ───
+
+    protected function getUserModel(): string
+    {
+        return config('moe-auth.user_model', config('auth.providers.users.model'));
+    }
+
+    protected function redirectPath(): string
+    {
+        return config('moe-auth.redirects.register', '/dashboard');
+    }
+
+    protected function registerRules(): array
+    {
+        return [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:' . app($this->getUserModel())->getTable() . ',email',
+            'password' => 'required|string|min:8|confirmed',
+        ];
+    }
+
+    protected function otpMaxAttempts(): int
+    {
+        return config('moe-auth.rate_limit.otp_send.max_attempts', 3);
+    }
+
+    protected function otpDecaySeconds(): int
+    {
+        return config('moe-auth.rate_limit.otp_send.decay_minutes', 5) * 60;
+    }
+
+    protected function throttleKey(string $identifier): string
+    {
+        return 'moe-auth:register-otp:' . $identifier;
+    }
+
+    protected function throttledMessage(int $seconds): string
+    {
+        return "Too many attempts. Please try again in {$seconds} seconds.";
+    }
+
+    protected function startOtpCooldown(): void
+    {
+        $this->otpCooldown = config('moe-auth.otp.throttle', 60);
+        $this->dispatch('otp-cooldown-started', $this->otpCooldown);
     }
 
     public function render()

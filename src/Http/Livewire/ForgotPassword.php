@@ -3,20 +3,16 @@
 namespace Moe\Auth\Http\Livewire;
 
 use Illuminate\Support\Facades\Password;
-use Livewire\Attributes\Layout;
-use Livewire\Attributes\Rule;
 use Livewire\Component;
 
 class ForgotPassword extends Component
 {
-    #[Rule('required|string|email')]
     public string $email = '';
-
     public ?string $status = null;
 
     public function sendResetLink(): void
     {
-        $this->validate();
+        $this->validate($this->rules());
 
         $status = Password::sendResetLink(['email' => $this->email]);
 
@@ -28,7 +24,13 @@ class ForgotPassword extends Component
         }
     }
 
-    #[Layout('layouts.guest')]
+    protected function rules(): array
+    {
+        return [
+            'email' => 'required|string|email',
+        ];
+    }
+
     public function render()
     {
         return view('moe-auth::livewire.auth.forgot-password');
