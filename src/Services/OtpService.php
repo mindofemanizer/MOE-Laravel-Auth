@@ -65,8 +65,7 @@ class OtpService
         $otp = OtpCode::where('identifier', $identifier)
             ->where('code', $code)
             ->where('type', $type)
-            ->where('expires_at', '>', now())
-            ->where('used', false)
+            ->valid()
             ->latest()
             ->first();
 

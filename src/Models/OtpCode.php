@@ -20,4 +20,9 @@ class OtpCode extends Model
         'expires_at' => 'datetime',
         'used' => 'boolean',
     ];
+
+    public function scopeValid($query)
+    {
+        return $query->where('used', false)->where('expires_at', '>', now());
+    }
 }
