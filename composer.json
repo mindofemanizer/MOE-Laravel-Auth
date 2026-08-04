@@ -1,4 +1,4 @@
-﻿{
+{
     "name":  "moe/laravel-auth",
     "description":  "Complete auth package for Laravel â€” login, register, OTP (email/WhatsApp/SMS), Google OAuth, role middleware, password reset",
     "type":  "library",
