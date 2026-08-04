@@ -1,58 +1,71 @@
-{
-    "name": "moe/laravel-auth",
-    "description": "Complete auth package for Laravel — login, register, OTP (email/WhatsApp/SMS), Google OAuth, role middleware, password reset",
-    "type": "library",
-    "license": "MIT",
-    "keywords": ["laravel", "auth", "login", "register", "otp", "google", "livewire", "moe"],
-    "authors": [
-        {
-            "name": "MindOfEmanizer",
-            "email": "mindofemanizer@users.noreply.github.com"
-        }
-    ],
-    "support": {
-        "issues": "https://github.com/mindofemanizer/MOE-Laravel-Auth/issues",
-        "source": "https://github.com/mindofemanizer/MOE-Laravel-Auth"
-    },
-    "require": {
-        "php": "^8.2",
-        "illuminate/support": "^11.0|^12.0|^13.0",
-        "illuminate/auth": "^11.0|^12.0|^13.0",
-        "illuminate/database": "^11.0|^12.0|^13.0",
-        "illuminate/mail": "^11.0|^12.0|^13.0",
-        "livewire/livewire": "^3.0|^4.0"
-    },
-    "require-dev": {
-        "orchestra/testbench": "^9.0",
-        "phpunit/phpunit": "^10.5"
-    },
-    "autoload": {
-        "psr-4": {
-            "Moe\\Auth\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Moe\\Auth\\Tests\\": "tests/"
-        }
-    },
-    "suggest": {
-        "laravel/socialite": "Required for Google OAuth login",
-        "moe/laravel-settings": "Required for dynamic config from admin panel"
-    },
-    "scripts": {
-        "test": "phpunit"
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Moe\\Auth\\MoeAuthServiceProvider"
-            ]
-        }
-    },
-    "config": {
-        "sort-packages": true
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+﻿{
+    "name":  "moe/laravel-auth",
+    "description":  "Complete auth package for Laravel â€” login, register, OTP (email/WhatsApp/SMS), Google OAuth, role middleware, password reset",
+    "type":  "library",
+    "license":  "MIT",
+    "keywords":  [
+                     "laravel",
+                     "auth",
+                     "login",
+                     "register",
+                     "otp",
+                     "google",
+                     "livewire",
+                     "moe"
+                 ],
+    "authors":  [
+                    {
+                        "name":  "MindOfEmanizer",
+                        "email":  "mindofemanizer@users.noreply.github.com"
+                    }
+                ],
+    "support":  {
+                    "issues":  "https://github.com/mindofemanizer/MOE-Laravel-Auth/issues",
+                    "source":  "https://github.com/mindofemanizer/MOE-Laravel-Auth"
+                },
+    "require":  {
+                    "php":  "^8.2",
+                    "illuminate/support":  "^11.0|^12.0|^13.0",
+                    "illuminate/auth":  "^11.0|^12.0|^13.0",
+                    "illuminate/database":  "^11.0|^12.0|^13.0",
+                    "illuminate/mail":  "^11.0|^12.0|^13.0",
+                    "livewire/livewire":  "^3.0|^4.0"
+                },
+    "require-dev":  {
+                        "orchestra/testbench":  "^9.0",
+                        "pestphp/pest":  "^3.0"
+                    },
+    "autoload":  {
+                     "psr-4":  {
+                                   "Moe\\Auth\\":  "src/"
+                               }
+                 },
+    "autoload-dev":  {
+                         "psr-4":  {
+                                       "Moe\\Auth\\Tests\\":  "tests/"
+                                   }
+                     },
+    "suggest":  {
+                    "laravel/socialite":  "Required for Google OAuth login",
+                    "moe/laravel-settings":  "Required for dynamic config from admin panel"
+                },
+    "scripts":  {
+                    "test":  "pest",
+                    "test-coverage":  "pest --coverage"
+                },
+    "extra":  {
+                  "laravel":  {
+                                  "providers":  [
+                                                    "Moe\\Auth\\MoeAuthServiceProvider"
+                                                ]
+                              }
+              },
+    "config":  {
+                   "sort-packages":  true,
+                   "allow-plugins":  {
+                                         "pestphp/pest-plugin":  true
+                                     }
+               },
+    "minimum-stability":  "dev",
+    "prefer-stable":  true
 }
