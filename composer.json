@@ -3,21 +3,16 @@
     "description": "Complete auth package for Laravel — login, register, OTP (email/WhatsApp/SMS), Google OAuth, role middleware, password reset",
     "type": "library",
     "license": "MIT",
+    "keywords": ["laravel", "auth", "login", "register", "otp", "google", "livewire", "moe"],
     "authors": [
         {
-            "name": "MindOfEmanizer"
+            "name": "MindOfEmanizer",
+            "email": "mindofemanizer@users.noreply.github.com"
         }
     ],
-    "keywords": ["laravel", "auth", "login", "register", "otp", "google", "livewire", "moe"],
-    "autoload": {
-        "psr-4": {
-            "Moe\\Auth\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Moe\\Auth\\Tests\\": "tests/"
-        }
+    "support": {
+        "issues": "https://github.com/mindofemanizer/MOE-Laravel-Auth/issues",
+        "source": "https://github.com/mindofemanizer/MOE-Laravel-Auth"
     },
     "require": {
         "php": "^8.2",
@@ -31,9 +26,22 @@
         "orchestra/testbench": "^9.0",
         "phpunit/phpunit": "^10.5"
     },
+    "autoload": {
+        "psr-4": {
+            "Moe\\Auth\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moe\\Auth\\Tests\\": "tests/"
+        }
+    },
     "suggest": {
         "laravel/socialite": "Required for Google OAuth login",
         "moe/laravel-settings": "Required for dynamic config from admin panel"
+    },
+    "scripts": {
+        "test": "phpunit"
     },
     "extra": {
         "laravel": {
@@ -41,6 +49,9 @@
                 "Moe\\Auth\\MoeAuthServiceProvider"
             ]
         }
+    },
+    "config": {
+        "sort-packages": true
     },
     "minimum-stability": "dev",
     "prefer-stable": true
