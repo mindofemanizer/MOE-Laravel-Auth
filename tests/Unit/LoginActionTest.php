@@ -1,31 +1,49 @@
 <?php
 
+namespace Moe\Auth\Tests\Unit;
+
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Moe\Auth\Actions\LoginAction;
+use Moe\Auth\Tests\TestCase;
 use Moe\Auth\Tests\User;
 
-beforeEach(function () {
-    $this->user = User::create([
-        'name' => 'Test',
-        'email' => 'test@example.com',
-        'password' => Hash::make('password'),
-    ]);
-});
+class LoginActionTest extends TestCase
+{
+    private User $user;
 
-it('logs in with valid credentials', function () {
-    $action = new LoginAction();
-    $action->execute('test@example.com', 'password');
+    protected function setUp(): void
+    {
+        parent::setUp();
 
-    $this->assertAuthenticatedAs($this->user);
-});
+        $this->user = User::create([
+            'name' => 'Test',
+            'email' => 'test@example.com',
+            'password' => Hash::make('password'),
+        ]);
+    }
 
-it('rejects invalid password', function () {
-    expect(fn () => (new LoginAction())->execute('test@example.com', 'wrong-password'))
-        ->toThrow(ValidationException::class);
-});
+    public function test_login_with_valid_credentials(): void
+    {
+        $action = new LoginAction();
+        $action->execute('test@example.com', 'password');
 
-it('rejects nonexistent email', function () {
-    expect(fn () => (new LoginAction())->execute('nonexistent@example.com', 'password'))
-        ->toThrow(ValidationException::class);
-});
+        $this->assertAuthenticatedAs($this->user);
+    }
+
+    public function test_login_with_invalid_password(): void
+    {
+        $this->expectException(ValidationException::class);
+
+        $action = new LoginAction();
+        $action->execute('test@example.com', 'wrong-password');
+    }
+
+    public function test_login_with_nonexistent_email(): void
+    {
+        $this->expectException(ValidationException::class);
+
+        $action = new LoginAction();
+        $action->execute('nonexistent@example.com', 'password');
+    }
+}

@@ -6,8 +6,6 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
 
 class RegisterAction
 {
@@ -27,8 +25,6 @@ class RegisterAction
         $modelClass = $model
             ?? config('moe-auth.user_model')
             ?? config('auth.providers.users.model');
-
-        $this->validate($data, $modelClass);
 
         // Pass plain password — Laravel's `hashed` cast (User/Client) will hash once.
         // Fallback Hash::make only when the model does not cast password as hashed.
@@ -58,29 +54,6 @@ class RegisterAction
         }
 
         return $user;
-    }
-
-    /**
-     * Validate registration data.
-     *
-     * @param  array<string, mixed>  $data
-     * @param  class-string  $modelClass
-     *
-     * @throws ValidationException
-     */
-    protected function validate(array $data, string $modelClass): void
-    {
-        $table = (new $modelClass)->getTable();
-
-        $validator = Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:' . $table . ',email'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
-
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
-        }
     }
 
     /**

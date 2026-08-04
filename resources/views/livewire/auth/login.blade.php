@@ -179,7 +179,7 @@
         let remaining = seconds;
         const interval = setInterval(() => {
             remaining--;
-            Livewire.find('{{ $this->getId() }}').set('otpCooldown', remaining);
+            Livewire.find('{{ $this->id }}').set('otpCooldown', remaining);
             if (remaining <= 0) clearInterval(interval);
         }, 1000);
     });
