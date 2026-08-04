@@ -4,6 +4,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Load package routes
+    |--------------------------------------------------------------------------
+    | Set false for multi-portal apps that define their own auth routes
+    | (e.g. /backoffice/login + /customer/login).
+    */
+    'load_routes' => env('MOE_AUTH_LOAD_ROUTES', true),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Default auth guard
+    |--------------------------------------------------------------------------
+    | Used by LoginAction / RegisterAction / GoogleService when no guard is
+    | passed explicitly. Null = Laravel default guard.
+    */
+    'guard' => env('MOE_AUTH_GUARD', null),
+
+    /*
+    |--------------------------------------------------------------------------
     | Redirect paths
     |--------------------------------------------------------------------------
     */
@@ -82,6 +100,20 @@ return [
         'client_id' => env('GOOGLE_CLIENT_ID', ''),
         'client_secret' => env('GOOGLE_CLIENT_SECRET', ''),
         'redirect' => env('GOOGLE_REDIRECT_URI', '/auth/google/callback'),
+
+        /*
+        | When false, only existing accounts may sign in via Google.
+        | Useful for invite-only / pre-provisioned customer portals.
+        */
+        'auto_create' => env('MOE_AUTH_GOOGLE_AUTO_CREATE', true),
+
+        /*
+        | Extra attributes written when linking an existing account.
+        | Supported placeholders: {id}, {name}, {email}, {avatar}
+        */
+        'link_attributes' => [
+            'google_id' => '{id}',
+        ],
     ],
 
     /*
@@ -96,9 +128,10 @@ return [
         | The middleware will check if authenticated user's role matches.
         */
         'portals' => [
-            'admin' => ['admin', 'supervisor'],
+            'admin' => ['admin', 'supervisor', 'super_admin'],
             'vendor' => ['vendor'],
-            'staff' => ['admin', 'supervisor', 'staff', 'warehouse', 'finance', 'cs', 'marketing', 'purchasing', 'qc'],
+            'staff' => ['admin', 'supervisor', 'staff', 'warehouse', 'finance', 'cs', 'marketing', 'purchasing', 'qc', 'super_admin', 'support', 'developer'],
+            'backoffice' => ['super_admin', 'finance', 'support', 'developer'],
         ],
 
         /*
@@ -108,6 +141,7 @@ return [
             'admin' => '/backoffice/login',
             'vendor' => '/vendor/login',
             'staff' => '/backoffice/login',
+            'backoffice' => '/backoffice/login',
         ],
     ],
 

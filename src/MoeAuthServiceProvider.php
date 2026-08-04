@@ -22,6 +22,12 @@ class MoeAuthServiceProvider extends ServiceProvider
 
     protected function registerRoutes(): void
     {
+        // Multi-portal apps (dual guard, custom prefixes) should set load_routes=false
+        // and define their own routes while still using package actions/services.
+        if (! config('moe-auth.load_routes', true)) {
+            return;
+        }
+
         $this->loadRoutesFrom(__DIR__ . '/../routes/auth.php');
     }
 
