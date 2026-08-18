@@ -25,11 +25,12 @@
         "illuminate/auth": "^11.0|^12.0|^13.0",
         "illuminate/database": "^11.0|^12.0|^13.0",
         "illuminate/mail": "^11.0|^12.0|^13.0",
+        "illuminate/validation": "^11.0|^12.0|^13.0",
         "livewire/livewire": "^3.0|^4.0"
     },
     "require-dev": {
         "orchestra/testbench": "^9.0",
-        "phpunit/phpunit": "^10.5"
+        "phpunit/phpunit": "^10.5|^11.0"
     },
     "suggest": {
         "laravel/socialite": "Required for Google OAuth login",
@@ -40,6 +41,15 @@
             "providers": [
                 "Moe\\Auth\\MoeAuthServiceProvider"
             ]
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "test-coverage": "phpunit --coverage-text"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
         }
     },
     "minimum-stability": "dev",
