@@ -91,6 +91,7 @@ class GoogleService
             'google_id' => $socialUser->getId(),
             'email_verified_at' => now(),
             'password' => Hash::make(Str::random(40)),
+            'role' => 'customer',
         ], $this->resolvePlaceholders($createAttributes, $placeholders)));
     }
 
