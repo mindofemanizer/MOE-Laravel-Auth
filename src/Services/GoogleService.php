@@ -3,6 +3,8 @@
 namespace Moe\Auth\Services;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
 class GoogleService
@@ -88,7 +90,7 @@ class GoogleService
             'email' => $socialUser->getEmail(),
             'google_id' => $socialUser->getId(),
             'email_verified_at' => now(),
-            'password' => null,
+            'password' => Hash::make(Str::random(40)),
         ], $this->resolvePlaceholders($createAttributes, $placeholders)));
     }
 
