@@ -71,6 +71,11 @@ class GoogleService
                 $placeholders,
             );
 
+            // Standar industri: Google sudah verifikasi email → auto-verified saat linking
+            if (blank(data_get($user, 'email_verified_at')) && ! isset($attrs['email_verified_at'])) {
+                $attrs['email_verified_at'] = now();
+            }
+
             // Only write attributes that are empty/null on the existing model.
             $updates = [];
             foreach ($attrs as $key => $value) {
