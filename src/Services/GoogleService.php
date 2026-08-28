@@ -9,6 +9,13 @@ use Laravel\Socialite\Facades\Socialite;
 
 class GoogleService
 {
+    protected $socialUser;
+
+    public function getSocialUser()
+    {
+        return $this->socialUser;
+    }
+
     public function redirect()
     {
         if (! class_exists(\Laravel\Socialite\Facades\Socialite::class)) {
@@ -35,7 +42,8 @@ class GoogleService
             abort(500, 'laravel/socialite is required for Google OAuth.');
         }
 
-        $socialUser = Socialite::driver('google')->user();
+        $this->socialUser = Socialite::driver('google')->user();
+        $socialUser = $this->socialUser;
 
         $userModelClass = $model
             ?? config('moe-auth.user_model')
