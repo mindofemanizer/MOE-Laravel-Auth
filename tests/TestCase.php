@@ -38,6 +38,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
                 $table->string('email')->unique();
                 $table->timestamp('email_verified_at')->nullable();
                 $table->string('password');
+                $table->string('role')->nullable();
                 $table->rememberToken();
                 $table->timestamps();
             });
